@@ -15,6 +15,7 @@ export const UserProvider = ({ children }) => {
       picture: '',
       idCardPicture: '',
       passcode: '',
+      loggedIn: false,
     });
   
     return (

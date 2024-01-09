@@ -8,6 +8,7 @@ import {
   View,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { useUser } from "../../context/UserContext";
 
@@ -19,12 +20,14 @@ const CreatePasscodeScreen = () => {
   const handleDelete = () => {
     setPasscode(passcode.slice(0, -1));
   };
-  const handlePress = (key) => {
+  const handlePress = async (key) => {
     if (passcode.length < 4) {
       setPasscode(passcode + key);
     }
     if (passcode.length === 3) {
-      setUserData({ ...userData, passcode: passcode + key });
+        const newPasscode = passcode + key;
+      setUserData({ ...userData, passcode: newPasscode });
+      await AsyncStorage.setItem('passcode', newPasscode);
       navigation.navigate("FaceID");
     }
   };

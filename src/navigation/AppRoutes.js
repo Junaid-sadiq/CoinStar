@@ -2,16 +2,17 @@ import React, { useEffect, useState } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { ActivityIndicator } from "react-native";
 
 import AppNavigation from "./AppNavigation";
 import AuthNavigation from "./AuthNavigation";
 import OnBoardingScreen from "../screens/auth/OnBoardingScreen";
-import { ActivityIndicator } from "react-native";
+import { useUser } from "../context/UserContext";
 
 const Stack = createNativeStackNavigator();
 
 const AppRoutes = () => {
-  const [user, setUser] = useState(null);
+  const {userData, setUserData} = useUser();
   const [isFirstLaunch, setIsFirstLaunch] = useState(null);
 
   useEffect(() => {
@@ -30,11 +31,12 @@ const AppRoutes = () => {
   }
   return (
     <NavigationContainer>
-       {user ? (
+      <AppNavigation />
+       {/* {userData.loggedIn ? (
         <AppNavigation />
       ) : (
         <AuthNavigation isFirstLaunch={isFirstLaunch} />
-      )}
+      )} */}
     </NavigationContainer>
   );
 };

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import {
+  Alert,
   Image,
   ImageBackground,
   StyleSheet,
@@ -8,6 +9,7 @@ import {
   View,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { useUser } from "../../context/UserContext";
 
@@ -16,16 +18,30 @@ const EnterPasscodeScreen = () => {
   const [passcode, setPasscode] = useState("");
   const { userData, setUserData } = useUser();
 
+  console.log("passcode:", userData.passcode)
+
   const handleDelete = () => {
     setPasscode(passcode.slice(0, -1));
   };
-  const handlePress = (key) => {
-    if (passcode.length < 4) {
-      setPasscode(passcode + key);
-    }
-    if (passcode.length === 3) {
-      setUserData({ ...userData, passcode: passcode + key });
-      navigation.navigate("FaceID");
+
+  const handlePress = async (key) => {
+    const newPasscode = passcode.length < 4 ? passcode + key : passcode;
+  
+    setPasscode(newPasscode);
+  
+    if (newPasscode.length === 4) {
+      const storedPasscode = await AsyncStorage.getItem('passcode');
+      // Check if the passcode entered by the user matches the stored passcode
+      if (newPasscode === storedPasscode) {
+        setUserData({ ...userData, loggedIn: ture });
+        // If it matches, navigate to the next screen
+        navigation.navigate("NextScreen");
+      } else {
+        // If it doesn't match, alert the user
+        Alert.alert('Incorrect passcode', 'The passcode you entered is incorrect. Please try again.');
+        // Reset the entered passcode
+        setPasscode("");
+      }
     }
   };
   return (
@@ -57,9 +73,8 @@ const EnterPasscodeScreen = () => {
         ))}
         <TouchableOpacity style={styles.key}>
           <TouchableOpacity onPress={()=> navigation.navigate('FaceID')} style={styles.keyBG}>
-            {/* Replace with your Face ID icon */}
             <Image
-              source={require("../../../assets/images/FaceID.png")} // Replace with your local image
+              source={require("../../../assets/images/FaceID.png")}
               style={styles.faceIdIcon}
             />
           </TouchableOpacity>
